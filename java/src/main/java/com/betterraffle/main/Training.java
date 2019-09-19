@@ -15,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,44 +25,55 @@ public class Training {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
-    private static int RUN_MODE = Constants.RUN_MODE_EXTRACT;
+    private static EigenFaceRecognizer mRecognizer;
 
-    private EigenFaceRecognizer mRecognizer;
-
-    private void trainRecognizer(TrainingData trainingData, String imageSourcePath) {
+    public static void trainRecognizer(TrainingData trainingData, String imageSourcePath) {
         MatOfInt labelsMat = new MatOfInt();
         labelsMat.fromList(trainingData.getLabels());
         mRecognizer = EigenFaceRecognizer.create();
         List<Mat> images = new ArrayList<>();
         for (String imagePath : trainingData.getImagePaths()) {
-            Mat image = getImageMat(imageSourcePath + imagePath + Constants.EXT_JPG);
+            Mat image = getImageMat(imageSourcePath + "/" + imagePath + Constants.EXT_JPG);
             images.add(image);
         }
+        System.out.println("Started training");
         mRecognizer.train(images, labelsMat);
+        System.out.println("Trained");
     }
 
-    private void recognize() {
-        String baseImgPath = Constants.BASE_RESOURCE_PATH + Constants.OUTPUT_DIR_PATH;
-        String imagePath = baseImgPath + "/1004/4.jpg";
-        Mat image = Imgcodecs.imread(imagePath, 0);
-        Imgproc.resize(image, image, new Size(500, 500));
-        int[] outLabel = new int[1];
-        double[] outConf = new double[1];
-        System.out.println("Starting Prediction...");
-        mRecognizer.predict(image, outLabel, outConf);
+    // BasedirPath = ./files/upload
+    // imageName = 6473483.jpg
+    public static void recognize(String imageName, String baseDirPath) {
+        CascadeClassifier classifier = new CascadeClassifier(
+                Constants.BASE_RESOURCE_PATH + Constants.CLASSIFIER_ALT);
+        String inputImagePath = getImagePath(imageName, baseDirPath, false);
+        Mat inputImage = getImageMat(inputImagePath);
+        List<Mat> faces = findAndCropFace(inputImage, classifier);
+        int topLabel = -1;
+        double topConfidence = -1;
+        for (Mat face : faces) {
+            int[] outLabel = new int[1];
+            double[] outConf = new double[1];
+            mRecognizer.predict(face, outLabel, outConf);
+            if (topConfidence == -1) {
+                topConfidence = outConf[0];
+                topLabel = outLabel[0];
+            }
 
-        System.out.println("***Predicted label is " + Arrays.toString(outLabel) + ".***");
+            // Less is more
+            if (outConf[0] < topConfidence) {
+                topConfidence = outConf[0];
+                topLabel = outLabel[0];
+            }
+        }
 
-        System.out.println("***Actual label is " + 1004 + ".***");
-        System.out.println("***Confidence value is " + Arrays.toString(outConf) + ".***");
+        System.out.println("Predicted label is " + topLabel);
     }
 
-    private List<Mat> findAndCropFace(String imageName, String baseInputDirPath, CascadeClassifier classifier) {
-        int size = 500;
+    public static List<Mat> findAndCropFace(Mat inputImage, CascadeClassifier classifier) {
+        int size = 1000;
 
         MatOfRect faceDetections = new MatOfRect();
-        String inputImagePath = baseInputDirPath + "/" + imageName + Constants.EXT_JPG;
-        Mat inputImage = getImageMat(inputImagePath);
         classifier.detectMultiScale(inputImage, faceDetections);
 
         System.out.println(String.format("Detected %s faces", faceDetections.toArray().length));
@@ -85,7 +95,7 @@ public class Training {
         return faces;
     }
 
-    private void writeFacesToImgFiles(List<Mat> faces, String imageName, String baseOutputDirPath) {
+    public static void writeFacesToImgFiles(List<Mat> faces, String imageName, String baseOutputDirPath) {
         int i = 0;
         for (Mat face : faces) {
             // Write new image which just has the face
@@ -101,7 +111,7 @@ public class Training {
         }
     }
 
-    private TrainingData prepareTrainingData(String sourcePath) {
+    public static TrainingData prepareTrainingData(String sourcePath) {
         TrainingData trainingData = new TrainingData();
 
         List<String> names = getFileNamesWithDirectoryInDirectory(sourcePath);
@@ -120,11 +130,17 @@ public class Training {
      * returns Matrix from image with absolute address
      * ./resources/input/1001/1.jpg
      */
-    private Mat getImageMat(String imagePath) {
+    public static Mat getImageMat(String imagePath) {
         return Imgcodecs.imread(imagePath, 0);
     }
 
-    private void createDirectory(String baseDir, String imagePath) {
+    public static String getImagePath(String imageName, String baseInputDirPath, boolean addExt) {
+        if (addExt)
+            return baseInputDirPath + "/" + imageName + Constants.EXT_JPG;
+        return baseInputDirPath + "/" + imageName;
+    }
+
+    private static void createDirectory(String baseDir, String imagePath) {
         String[] tokens = imagePath.split("/");
         if (tokens.length != 3) {
             return;
@@ -139,7 +155,7 @@ public class Training {
         }
     }
 
-    private List<String> getFileNamesInDirectory(String sourceDir) {
+    public static List<String> getFileNamesInDirectory(String sourceDir) {
         List<String> list = new ArrayList<>();
         try {
             Stream<Path> paths = Files.walk(Paths.get(sourceDir));
@@ -153,7 +169,7 @@ public class Training {
         return list;
     }
 
-    private List<String> getFileNamesWithDirectoryInDirectory(String sourceDir) {
+    private static List<String> getFileNamesWithDirectoryInDirectory(String sourceDir) {
         List<String> list = new ArrayList<>();
         try {
             Stream<Path> paths = Files.walk(Paths.get(sourceDir));

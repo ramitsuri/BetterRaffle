@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Better Rafle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+         input[type=text], select {
+          width: 100%;
+          padding: 12px 20px;
+          margin: 8px 0;
+          display: inline-block;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          box-sizing: border-box;
+        }
+
+        .button {
+          background-color: #013064;
+          border: none;
+          color: white;
+          padding: 15px 32px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin: 4px 2px;
+          cursor: pointer;
+        }
+
+.form-style-3{
+	max-width: 450px;
+	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+.form-style-3 label{
+	display:block;
+	margin-bottom: 10px;
+}
+.form-style-3 label > span{
+	float: left;
+	width: 100px;
+	color: #F072A9;
+	font-weight: bold;
+	font-size: 13px;
+	text-shadow: 1px 1px 1px #fff;
+}
+.form-style-3 fieldset{
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	margin: 0px 0px 10px 0px;
+	border: 1px solid #FFD2D2;
+	padding: 20px;
+	background: #FFF4F4;
+	box-shadow: inset 0px 0px 15px #FFE5E5;
+	-moz-box-shadow: inset 0px 0px 15px #FFE5E5;
+	-webkit-box-shadow: inset 0px 0px 15px #FFE5E5;
+}
+.form-style-3 fieldset legend{
+	color: #000000;
+	border-top: 1px solid #FFD2D2;
+	border-left: 1px solid #FFD2D2;
+	border-right: 1px solid #FFD2D2;
+	border-radius: 5px 5px 0px 0px;
+	-webkit-border-radius: 5px 5px 0px 0px;
+	-moz-border-radius: 5px 5px 0px 0px;
+	background: #FFF4F4;
+	padding: 0px 8px 3px 8px;
+	box-shadow: -0px -1px 2px #F1F1F1;
+	-moz-box-shadow:-0px -1px 2px #F1F1F1;
+	-webkit-box-shadow:-0px -1px 2px #F1F1F1;
+	font-weight: normal;
+	font-size: 12px;
+}
+.form-style-3 textarea{
+	width:250px;
+	height:100px;
+}
+.form-style-3 input[type=text],
+.form-style-3 input[type=date],
+.form-style-3 input[type=datetime],
+.form-style-3 input[type=number],
+.form-style-3 input[type=search],
+.form-style-3 input[type=time],
+.form-style-3 input[type=url],
+.form-style-3 input[type=email],
+.form-style-3 select,
+.form-style-3 textarea{
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border: 1px solid #FFC2DC;
+	outline: none;
+	color: #F072A9;
+	padding: 5px 8px 5px 8px;
+	box-shadow: inset 1px 1px 4px #FFD5E7;
+	-moz-box-shadow: inset 1px 1px 4px #FFD5E7;
+	-webkit-box-shadow: inset 1px 1px 4px #FFD5E7;
+	background: #FFEFF6;
+	width:50%;
+}
+.form-style-3  input[type=submit],
+.form-style-3  input[type=button]{
+	background: #EB3B88;
+	border: 1px solid #C94A81;
+	padding: 5px 15px 5px 15px;
+	color: #FFCBE2;
+	box-shadow: inset -1px -1px 3px #FF62A7;
+	-moz-box-shadow: inset -1px -1px 3px #FF62A7;
+	-webkit-box-shadow: inset -1px -1px 3px #FF62A7;
+	border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	font-weight: bold;
+}
+
+.ticket {
+  position: relative;
+  box-sizing: border-box;
+  width: 160px;
+  height: 240px;
+  margin: 20px auto 0;
+  padding: 20px;
+  border-radius: 10px;
+  background: #FBFBFB;
+  box-shadow: 2px 2px 15px 0px #AB9B0D;
+  transform: rotate(90deg) ;
+
+  &:before,
+  &:after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    height: 6px;
+    width: 290px;
+  }
+
+  &:before {
+    top: -5px;
+    background: radial-gradient(circle, transparent, transparent 50%, #FBFBFB 50%, #FBFBFB 100% ) -7px -8px / 16px 16px repeat-x,
+  }
+
+  &:after {
+    bottom: -5px;
+    background: radial-gradient(circle, transparent, transparent 50%, #FBFBFB 50%, #FBFBFB 100% ) -7px -2px / 16px 16px repeat-x,
+  }
+}
+
+.ticket__content {
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  border: 6px solid #D8D8D8;
+}
+
+.ticket__text {
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  font-size: 3rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #013064;
+  transform:translate(0px, 50px) rotate(-90deg) ;
+}
+
+body {
+  background-color: #013064;
+}
+    </style>
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+    <script>
+    $(document).ready(function(){
+            document.getElementById("ticketbtn").addEventListener("click", function() {
+            document.getElementById("token").innerText = "";
+            var userName = $( "#uname" ).val();
+                $.ajax({
+                        "url" : "http://10.48.69.70:8080/signin",
+                        "type" : "GET",
+                        "data": {
+                            username: userName
+                         },
+                        "success" : function(data) {
+                            document.getElementById("token").style.visibility = "visible";
+                            //document.getElementById("token").innerHTML = data.token;
+                            if(data.token.length === 0){
+                            document.getElementById("token").innerText = "- -";
+                            }else {
+                            document.getElementById("token").innerText = data.token;
+                            }
+                        },
+                        "error" : function(response,error){
+                            document.getElementById("token").value = "Error getting token. Try Again Please!";
+                        }
+                    });
+            });
+    });
+
+    </script>
+</head>
+<body class="w3-content" style="max-width:1300px">
+<!--<div class="form-style-2">
+    <fieldset>
+        <input type="text" id="uname" name="uname" placeholder="Your Username">
+        <label>
+            <button id="ticketbtn" class="button">Get Ticket</button>
+        </label>
+    </fieldset>
+</div>
+<div class="ticket">
+    <div class="ticket__content">
+        <p class="ticket__text" id="token"></p>
+    </div>
+</div>-->
+
+<div class="w3-row">
+    <div class="w3-full w3-light-grey w3-container w3-center" style="height:250px">
+        <div class="w3-padding-2">
+            <h1>Better Raffle</h1>
+        </div>
+        <div class="w3-padding-2">
+            <input type="text" id="uname" name="uname" placeholder="Your Username" required>
+            <label>
+                <button id="ticketbtn" class="button">Get Ticket</button>
+            </label>
+        </div>
+    </div>
+   <!-- <div class="w3-half w3-indigo w3-container" style="height:320px">
+        <div class="w3-padding-2 w3-center">
+            <h1>Your Ticket</h1>
+            <div class="ticket">
+                <div class="ticket__content">
+                    <p class="ticket__text" id="token"></p>
+                </div>
+            </div>
+        </div>
+    </div>-->
+</div>
+
+<div class="w3-row">
+    <div class="w3-full w3-indigo w3-container" style="height:320px">
+        <div class="w3-padding-2 w3-center">
+            <h1>Your Ticket</h1>
+            <div class="ticket">
+                <div class="ticket__content">
+                    <p class="ticket__text" id="token"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

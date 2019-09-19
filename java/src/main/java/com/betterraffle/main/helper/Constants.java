@@ -2,10 +2,13 @@ package com.betterraffle.main.helper;
 
 public class Constants {
 
-    public static final String BASE_RESOURCE_PATH = "./resources";
+    public static final String BASE_RESOURCE_PATH = "./files";
     public static final String INPUT_DIR_PATH = "/input";
     public static final String OUTPUT_DIR_PATH = "/output";
     public static final String IMAGES_DIR_PATH = "/images";
+    public static final String UPLOAD_DIR_PATH = "/upload";
+    public static final String HTML_DIR_PATH = "/html";
+    public static final String INDEX_PATH = "/index2.html";
 
 
     public static final String CLASSIFIER_ALT = "/haarcascade_frontalface_alt.xml";
@@ -17,6 +20,7 @@ public class Constants {
 
     public static final int RUN_MODE_EXTRACT = 0;
     public static final int RUN_MODE_MAIN = 1;
+    public static final int RUN_MODE_TRAIN = 2;
 
     public static final String EXT_JPG = ".jpg";
     public static final String EXT_DS = ".ds_store";
@@ -35,5 +39,5 @@ public class Constants {
     public static final String COL_TOKEN = "Token";
     public static final String COL_LAST_WON = "LastWon";
 
-    public static final int START_TOKEN = 9944000;
+    public static final int START_TOKEN = 9944100;
 }

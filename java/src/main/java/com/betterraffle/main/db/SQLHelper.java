@@ -12,7 +12,7 @@ public class SQLHelper {
 
     private static Connection sConnection;
 
-    public Connection getInstance() {
+    public static Connection getInstance() {
         if (sConnection == null) {
             sConnection = init();
         }
@@ -35,12 +35,29 @@ public class SQLHelper {
 
     public static User getUser(int id) {
         User user = null;
-        String sql = "SELECT * FROM " + Constants.TABLE_NAME + " WHERE " + Constants.COL_ID + " =?";
+        String sql = "SELECT * FROM " + Constants.TABLE_NAME + " WHERE " + Constants.COL_ID + " = ?";
         try {
             PreparedStatement statement = sConnection.prepareStatement(sql);
             statement.setInt(1, id);
 
-            ResultSet result = statement.executeQuery(sql);
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                user = getUserFromResult(result);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return user;
+    }
+
+    public static User getUser(String username) {
+        User user = null;
+        String sql = "SELECT * FROM " + Constants.TABLE_NAME + " WHERE " + Constants.COL_NAME + " = ?";
+        try {
+            PreparedStatement statement = sConnection.prepareStatement(sql);
+            statement.setString(1, username);
+
+            ResultSet result = statement.executeQuery();
             while (result.next()) {
                 user = getUserFromResult(result);
             }
@@ -52,7 +69,7 @@ public class SQLHelper {
 
     public static String fillToken(int id) {
         String token = null;
-        String sql = "UPDATE " + Constants.TABLE_NAME + " set " + Constants.COL_TOKEN + " =? WHERE " + Constants.COL_ID + " =?";
+        String sql = "UPDATE " + Constants.TABLE_NAME + " set " + Constants.COL_TOKEN + " = ? WHERE " + Constants.COL_ID + " = ?";
         try {
             PreparedStatement statement = sConnection.prepareStatement(sql);
             token = String.valueOf(Utils.generateToken());
@@ -66,21 +83,44 @@ public class SQLHelper {
         return token;
     }
 
+    public static User fillToken(String userName) {
+        String token = null;
+        User user = getUser(userName);
+        if (user == null) {
+            return null;
+        }
+        String sql = "UPDATE " + Constants.TABLE_NAME + " set " + Constants.COL_TOKEN + " = ? WHERE " + Constants.COL_NAME + " = ?";
+        try {
+            PreparedStatement statement = sConnection.prepareStatement(sql);
+            token = String.valueOf(Utils.generateToken());
+            statement.setString(1, token);
+            statement.setString(2, userName);
+
+            statement.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return getUser(userName);
+    }
+
     public static User pickWinner() {
-        String sql = "SELECT * FROM " + Constants.TABLE_NAME + " where " + Constants.COL_ID + " is not null";
+        String sql = "SELECT * FROM " + Constants.TABLE_NAME + " where " + Constants.COL_ID + " is not null AND " + Constants.COL_TOKEN + " is not null AND " + Constants.COL_LAST_WON + " is null";
         try {
             List<User> users = new ArrayList<>();
             PreparedStatement statement = sConnection.prepareStatement(sql);
 
-            ResultSet result = statement.executeQuery(sql);
+            ResultSet result = statement.executeQuery();
             while (result.next()) {
                 User user = getUserFromResult(result);
                 users.add(user);
             }
-
-            int upperBoundExclusive = users.size();
-            int winnerIndex = Utils.pickRandomInt(upperBoundExclusive);
-            return users.get(winnerIndex);
+            if (users.size() > 0) {
+                int upperBoundExclusive = users.size();
+                int winnerIndex = Utils.pickRandomInt(upperBoundExclusive);
+                User winner = users.get(winnerIndex);
+                resetToken(winner.getId());
+                return users.get(winnerIndex);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -91,6 +131,19 @@ public class SQLHelper {
         String sql = "UPDATE " + Constants.TABLE_NAME + " set " + Constants.COL_TOKEN + " = null";
         try {
             PreparedStatement statement = sConnection.prepareStatement(sql);
+
+            statement.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public static void resetToken(int userId) {
+        String sql = "UPDATE " + Constants.TABLE_NAME + " set " + Constants.COL_TOKEN + " = null, " + Constants.COL_LAST_WON + " = ? " + " WHERE " + Constants.COL_ID + " = ?";
+        try {
+            PreparedStatement statement = sConnection.prepareStatement(sql);
+            statement.setInt(1, 1);
+            statement.setInt(2, userId);
 
             statement.executeUpdate();
         } catch (SQLException ex) {

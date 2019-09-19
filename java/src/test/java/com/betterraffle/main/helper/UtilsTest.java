@@ -28,10 +28,12 @@ public class UtilsTest {
 
     @Test
     public void testRandomGeneration() {
-        for (int i = 0; i < 10000; i++) {
-            int random = Utils.pickRandomInt(100);
+        int max = 6;
+        int times = 100;
+        for (int i = 0; i < times; i++) {
+            int random = Utils.pickRandomInt(max);
             System.out.println(random);
-            Assert.assertTrue(random < 100);
+            Assert.assertTrue(random < max);
             Assert.assertTrue(random >= 0);
         }
     }
